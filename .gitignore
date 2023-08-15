@@ -1,2 +1,3 @@
 .idea/
-alembic/versions/__pycache__/
+__pycache__/
+.python-version

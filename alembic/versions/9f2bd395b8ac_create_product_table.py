@@ -8,7 +8,7 @@ Create Date: 2023-08-03 23:16:29.315509
 from uuid import uuid4
 
 from alembic import op
-from sqlalchemy import Column, String, Float, Integer, UniqueConstraint
+from sqlalchemy import Column, String, Float, Integer, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import UUID
 
 # revision identifiers, used by Alembic.
@@ -21,7 +21,10 @@ depends_on = None
 def upgrade() -> None:
     op.create_table(
         'product',
-        Column('id', UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid4().hex),
+        Column(
+            'id', UUID(as_uuid=True), primary_key=True,
+            nullable=False, server_default=text('gen_random_uuid()'),
+        ),
         Column('name', String(length=100), nullable=False),
         Column('description', String(length=300), nullable=True),
         Column('global_price', Float, nullable=False),
