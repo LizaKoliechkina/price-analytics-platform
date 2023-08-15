@@ -17,7 +17,7 @@ engine = create_engine(DATABASE_URL)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def get_db_session() -> typing.Iterator:
+def db_session() -> typing.Iterator:
     db = Session()
     try:
         yield db
