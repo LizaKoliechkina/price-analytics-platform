@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Float, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
-from database import Base, generate_uuid
+from database.connect import Base, generate_uuid
 
 
 class Product(Base):
@@ -12,6 +12,7 @@ class Product(Base):
     global_price = Column(Float, nullable=False)
     local_price = Column(Float, nullable=False)
     sold_quantity = Column(Integer, nullable=False)
+    previous_sold_quantity = Column(Integer, nullable=False, default=0)
     cluster = Column(String(length=50), nullable=False)
     division = Column(String(length=50), nullable=False)
     country = Column(String(length=50), nullable=False)
