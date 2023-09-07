@@ -1,6 +1,5 @@
 from typing import Optional
 
-import numpy
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
@@ -33,7 +32,7 @@ class Product(BaseModel):
 
     @field_validator('net_sales', 'local_deviation', 'sales_increase', mode='before')
     def round_float_to_two_decimals(cls, v: float) -> float:
-        return numpy.around(v, decimals=2)
+        return round(v, 2)
 
     @field_validator('local_deviation', 'sales_increase')
     def add_percentage_sign(cls, v: float) -> str:
