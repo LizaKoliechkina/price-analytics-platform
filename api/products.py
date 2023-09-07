@@ -2,7 +2,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
+import pandas as pd
 
+from calculations import calculate_local_deviation, calculate_sales_increase
 from database.queries import read_products
 from schemas.product import Product
 
@@ -45,4 +47,23 @@ def get_products(
         logger.error(error_msg)
         return JSONResponse(status_code=404, content=error_msg)
 
-    return [Product.model_validate(p) for p in products]  # Pydantic v1: Product.from_orm(p)
+    products_df = pd.DataFrame({
+        'name': p.name,
+        'description': p.description,
+        'global_price': p.global_price,
+        'local_price': p.local_price,
+        'sold_quantity': p.sold_quantity,
+        'previous_sold_quantity': p.previous_sold_quantity,
+        'cluster': p.cluster,
+        'division': p.division,
+        'country': p.country,
+    } for p in products)
+
+    products_df['net_sales'] = products_df['sold_quantity'] * products_df['local_price']
+    products_df['local_deviation'] = products_df.apply(
+        lambda row: calculate_local_deviation(row), axis=1
+    )
+    products_df['sales_increase'] = products_df.apply(
+        lambda row: calculate_sales_increase(row), axis=1
+    )
+    return [Product.model_validate(p) for p in products_df.to_dict('records')]
