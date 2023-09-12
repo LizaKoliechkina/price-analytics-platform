@@ -4,37 +4,34 @@ from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
 
+from api import response_404, response_500
 from calculations import calculate_local_deviation, calculate_sales_increase
-from database.queries import read_products
+from database.queries import read_products, get_cluster_division
 from schemas.product import Product
 
 router = APIRouter()
 
 
 @router.get(
-    '/{country}/{division}/{cluster}',
+    '/{country}/{cluster}',
     response_model=list[Product],
-    responses={
-        500: {'description': 'Failed to retrieve products from the database', 'model': str},
-        404: {'description': 'No products were found for given parameters', 'model': str},
-    },
+    responses={500: response_500, 404: response_404},
 )
 def get_products(
         country: str,
-        division: str,
         cluster: str,
         request: Request,
 ) -> list[Product] | JSONResponse:
     logger.info(
         f'Received request to get products for '
-        f'following parameters: {country}, {division}, {cluster}.'
+        f'following parameters: {country}, {cluster}.'
     )
     try:
-        products = read_products(request.state.db, country, division, cluster)
+        products = read_products(request.state.db, cluster, country)
     except SQLAlchemyError as e:
         error_msg = (
             f'Failed to retrieve products from the database '
-            f'for {country}, {division}, {cluster}: {e}'
+            f'for {country}, {cluster}: {e}'
         )
         logger.error(error_msg)
         return JSONResponse(status_code=500, content=error_msg)
@@ -42,10 +39,12 @@ def get_products(
     if not products:
         error_msg = (
             f'No products were found for given '
-            f'parameters: {country}, {division}, {cluster}',
+            f'parameters: {country}, {cluster}',
         )
         logger.error(error_msg)
         return JSONResponse(status_code=404, content=error_msg)
+
+    division = get_cluster_division(request.state.db, cluster)
 
     products_df = pd.DataFrame({
         'name': p.name,
@@ -55,10 +54,9 @@ def get_products(
         'sold_quantity': p.sold_quantity,
         'previous_sold_quantity': p.previous_sold_quantity,
         'cluster': p.cluster,
-        'division': p.division,
+        'division': division,
         'country': p.country,
     } for p in products)
-
     products_df['net_sales'] = products_df['sold_quantity'] * products_df['local_price']
     products_df['local_deviation'] = products_df.apply(
         lambda row: calculate_local_deviation(row), axis=1
