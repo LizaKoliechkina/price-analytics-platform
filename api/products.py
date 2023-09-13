@@ -37,10 +37,7 @@ def get_products(
         return JSONResponse(status_code=500, content=error_msg)
 
     if not products:
-        error_msg = (
-            f'No products were found for given '
-            f'parameters: {country}, {cluster}',
-        )
+        error_msg = f'No products were found for given parameters: {country}, {cluster}'
         logger.error(error_msg)
         return JSONResponse(status_code=404, content=error_msg)
 

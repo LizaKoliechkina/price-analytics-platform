@@ -28,3 +28,11 @@ def test_get_products(
         assert product['net_sales'] == round(
             product['sold_quantity'] * product['local_price'], 2
         )
+
+
+def test_get_products_not_found() -> None:
+    response = requests.get(
+        f'{API_URL}/products/Franc/ACCESSORY',
+    )
+    assert response.status_code == 404
+    assert response.json() == 'No products were found for given parameters: Franc, ACCESSORY'
