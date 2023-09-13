@@ -14,7 +14,6 @@ class Product(Base):
     sold_quantity = Column(Integer, nullable=False)
     previous_sold_quantity = Column(Integer, nullable=False, default=0)
     cluster = Column(String(length=50), nullable=False)
-    division = Column(String(length=50), nullable=False)
     country = Column(String(length=50), nullable=False)
 
-    UniqueConstraint('name', 'cluster', 'division', 'country')
+    UniqueConstraint('name', 'cluster', 'country')

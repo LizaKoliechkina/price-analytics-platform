@@ -5,11 +5,13 @@ from fastapi.responses import Response
 
 from database.connect import db_session
 from api.products import router as product_router
+from api.cluster import router as cluster_router
 
 app = FastAPI()
 
 routers = {
     'products': product_router,
+    'cluster_data': cluster_router,
 }
 
 

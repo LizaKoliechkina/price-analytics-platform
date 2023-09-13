@@ -17,7 +17,7 @@ from calculations import calculate_sales_increase, calculate_local_deviation
 def test_calculate_sales_increase(row: dict, expected_increase: float) -> None:
     product_data = pd.Series(row)
     result = calculate_sales_increase(product_data)
-    assert round(result, 2) == expected_increase
+    assert result == expected_increase
 
 
 @pytest.mark.parametrize(
@@ -31,4 +31,4 @@ def test_calculate_sales_increase(row: dict, expected_increase: float) -> None:
 def test_calculate_local_deviation(row: dict, expected_deviation: float) -> None:
     product_data = pd.Series(row)
     result = calculate_local_deviation(product_data)
-    assert round(result, 2) == expected_deviation
+    assert result == expected_deviation

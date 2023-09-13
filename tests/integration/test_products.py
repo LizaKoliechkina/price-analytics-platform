@@ -5,17 +5,17 @@ from .conftest import API_URL
 
 
 @pytest.mark.parametrize(
-    'country, division, cluster, response_length',
+    'country, cluster, response_length',
     (
-            ('France', 'HDLSD', 'RELAY ACCESSORIES', 4),
-            ('Poland', 'HDLSD', 'FA ACCESSORY', 2),
+            ('France', 'RELAY ACCESSORIES', 4),
+            ('Poland', 'FA ACCESSORY', 2),
     )
 )
 def test_get_products(
-        country: str, division: str, cluster: str, response_length: int
+        country: str, cluster: str, response_length: int
 ) -> None:
     response = requests.get(
-        f'{API_URL}/products/{country}/{division}/{cluster}',
+        f'{API_URL}/products/{country}/{cluster}',
     )
 
     assert response.status_code == 200
@@ -28,3 +28,11 @@ def test_get_products(
         assert product['net_sales'] == round(
             product['sold_quantity'] * product['local_price'], 2
         )
+
+
+def test_get_products_not_found() -> None:
+    response = requests.get(
+        f'{API_URL}/products/Franc/ACCESSORY',
+    )
+    assert response.status_code == 404
+    assert response.json() == 'No products were found for given parameters: Franc, ACCESSORY'
