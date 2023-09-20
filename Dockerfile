@@ -1,5 +1,9 @@
 FROM python:3.10-slim as base
 
+ARG DB_URL_INPUT
+ENV DB_URL=$DB_URL_INPUT
+RUN echo "Database url is set to $DB_URL"
+
 WORKDIR /price-analytics-platform
 
 RUN pip install --no-cache-dir --upgrade pip
