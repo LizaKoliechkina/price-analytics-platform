@@ -35,4 +35,6 @@ def test_get_products_not_found() -> None:
         f'{API_URL}/products/Franc/ACCESSORY',
     )
     assert response.status_code == 404
-    assert response.json() == 'No products were found for given parameters: Franc, ACCESSORY'
+    assert response.json()['detail'] == (
+        'No products were found for given parameters: Franc, ACCESSORY'
+    )
