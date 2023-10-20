@@ -4,14 +4,16 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response
 
 from database.connect import db_session
-from api.products import router as product_router
-from api.cluster import router as cluster_router
+from api.countries import router as countries_router
+from api.products import router as products_router
+from api.clusters import router as clusters_router
 
 app = FastAPI()
 
 routers = {
-    'products': product_router,
-    'cluster_data': cluster_router,
+    'countries': countries_router,
+    'clusters': clusters_router,
+    'products': products_router,
 }
 
 

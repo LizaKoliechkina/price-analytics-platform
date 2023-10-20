@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Request, HTTPException
 from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
@@ -21,7 +20,7 @@ def get_products(
         country: str,
         cluster: str,
         request: Request,
-) -> list[Product] | JSONResponse:
+) -> list[Product] | HTTPException:
     logger.info(
         f'Received request to get products for '
         f'following parameters: {country}, {cluster}.'
@@ -34,12 +33,12 @@ def get_products(
             f'for {country}, {cluster}: {e}'
         )
         logger.error(error_msg)
-        return JSONResponse(status_code=500, content=error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
     if not products:
         error_msg = f'No products were found for given parameters: {country}, {cluster}'
         logger.error(error_msg)
-        return JSONResponse(status_code=404, content=error_msg)
+        raise HTTPException(status_code=404, detail=error_msg)
 
     division = get_cluster_division(request.state.db, cluster)
 
